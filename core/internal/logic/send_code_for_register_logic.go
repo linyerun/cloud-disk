@@ -6,7 +6,6 @@ import (
 	"cloud-disk/core/resp_code_msg"
 	"cloud-disk/core/utils"
 	"context"
-	"errors"
 	"time"
 
 	"cloud-disk/core/internal/svc"
@@ -29,26 +28,25 @@ func NewSendCodeForRegisterLogic(ctx context.Context, svcCtx *svc.ServiceContext
 	}
 }
 
-func (l *SendCodeForRegisterLogic) SendCodeForRegister(req *types.SendCodeRequest) (resp *types.CommonResponse, err error) {
+func (l *SendCodeForRegisterLogic) SendCodeForRegister(req *types.SendCodeRequest) (resp *types.CommonResponse, e error) {
 	resp = new(types.CommonResponse)
 	defer func() { resp.Msg = resp_code_msg.GetMsgByCode(resp.Code) }()
 	// 判断邮箱是否合法
 	// 判断这个邮箱是否被注册过了
 	if !utils.IsNormalEmail(req.Email) || db.HasRegistered(req.Email) {
 		resp.Code = resp_code_msg.ParamsError
-		err = errors.New("邮箱不合法或者邮箱已被注册")
 		return
 	}
 	// 判断邮箱短期又没发送邮件
 	// 存在, 那么Get的时候不会报错
-	if err = l.svcCtx.RedisClient.Get(l.ctx, define.RedisCodePrefix+req.Email).Err(); err == nil {
+	if err := l.svcCtx.RedisClient.Get(l.ctx, define.RedisCodePrefix+req.Email).Err(); err == nil {
 		resp.Code = resp_code_msg.EmailSendManyError
-		err = errors.New("不允许验证码频繁发送")
+		utils.Logger().Println("用户:" + req.Email + ", 打算频繁发送验证码")
 		return
 	}
 	// 生成验证码并发送到对应邮箱
 	code := utils.GetCode()
-	err = utils.SendCode(req.Email, code)
+	err := utils.SendCode(req.Email, code)
 	if err != nil {
 		resp.Code = resp_code_msg.SendEmailError
 		return
