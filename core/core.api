@@ -1,0 +1,40 @@
+service core-api {
+	@handler SendCodeForRegister
+	post /email/code/register(SendCodeRequest) returns (CommonResponse)
+
+	@handler Register
+	post /register/user(RegisterRequest) returns (CommonResponse)
+
+	@handler Login
+	post /login/user(LoginRequest) returns (CommonResponse)
+}
+
+type CommonResponse {
+	Code uint        `json:"code"`
+	Msg  string      `json:"msg"`
+	Data interface{} `json:"data,omitempty"`
+}
+
+type SendCodeRequest {
+	Email string `json:"email"`
+}
+
+type RegisterRequest {
+	// 邮箱
+	Email string `json:"email"`
+	// 密码
+	Password string `json:"password"`
+	// 昵称
+	Nickname string `json:"nickname"`
+	// 头像地址
+	HeadPortrait string `json:"head_portrait"`
+	// 验证码
+	Code string `json:"code"`
+}
+
+type LoginRequest {
+	// 邮箱地址
+	Email string `json:"email"`
+	// 密码
+	Password string `json:"password"`
+}
