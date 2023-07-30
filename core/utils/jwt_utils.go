@@ -8,9 +8,10 @@ import (
 )
 
 // GenerateToken 生成Token
-func GenerateToken(email string, second int64) (string, error) {
+func GenerateToken(email string, id uint, second int64) (string, error) {
 	uc := define.UserClaim{
 		Email: email,
+		ID:    id,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Second * time.Duration(second))), // 过期时间
 			IssuedAt:  jwt.NewNumericDate(time.Now()),                                          // 签发时间
@@ -22,8 +23,8 @@ func GenerateToken(email string, second int64) (string, error) {
 	return tokenString, err
 }
 
-// AnalyzeToken 解析token
-func AnalyzeToken(token string) (*define.UserClaim, error) {
+// ParseToken 解析token
+func ParseToken(token string) (*define.UserClaim, error) {
 	uc := new(define.UserClaim)
 	claims, err := jwt.ParseWithClaims(token, uc, func(token *jwt.Token) (interface{}, error) { return []byte(define.JwtKey), nil })
 	if err != nil {

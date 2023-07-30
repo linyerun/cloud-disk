@@ -9,6 +9,8 @@ var msgMap = map[uint]string{
 	TokenGenerateError: "生成token失败",
 	TokenParseError:    "解析token失败",
 	LoginError:         "账号或密码错误",
+	TokenError:         "token错误或者过期",
+	GetDataError:       "您所提供的参数获取数据失败",
 }
 
 func GetMsgByCode(code uint) string {

@@ -1,18 +1,16 @@
 package main
 
 import (
-	"flag"
-	"fmt"
-
 	"cloud-disk/core/internal/config"
 	"cloud-disk/core/internal/handler"
 	"cloud-disk/core/internal/svc"
-
+	"flag"
+	"fmt"
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/rest"
 )
 
-var configFile = flag.String("f", "etc/core-api.yaml", "the config file")
+var configFile = flag.String("f", "core/etc/core-api.yaml", "the config file")
 
 func main() {
 	flag.Parse()

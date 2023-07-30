@@ -23,3 +23,13 @@ type LoginRequest struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
+
+type UserMsgRequest struct {
+	Email string `json:"email"`
+}
+
+type UploadFile struct {
+	Hash string `json:"hash,optional"`
+	Size uint   `json:"size,optional"`
+	Path string `json:"path,optional"`
+}

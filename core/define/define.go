@@ -8,6 +8,7 @@ import (
 const (
 	RedisCodePrefix = "code_"
 	JwtKey          = "cloud-desk-lyr-goZero-jwt"
+	MaxFileSize     = 500 * 1024 * 1024 // 单位: B
 )
 
 const (
@@ -16,10 +17,14 @@ const (
 )
 
 var (
-	MailPassword = os.Getenv("MailPassword")
+	MailPassword     = os.Getenv("MailPassword")
+	CosBucket        = os.Getenv("CosBucket")
+	TencentSecretID  = os.Getenv("TencentSecretID")
+	TencentSecretKey = os.Getenv("TencentSecretKey")
 )
 
 type UserClaim struct {
+	ID    uint
 	Email string
 	jwt.RegisteredClaims
 }

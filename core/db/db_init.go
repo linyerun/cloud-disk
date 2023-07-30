@@ -27,6 +27,7 @@ func InitRedis(cnf *config.Config) *redis.Client {
 		DB:       0,  // use default DB
 	})
 	if err := db.Ping(context.Background()).Err(); err != nil {
+		utils.Logger().Warn("请开启Redis服务端，默认地址为: localhost:6379")
 		utils.Logger().Error(err)
 		panic(err)
 	}
@@ -47,6 +48,20 @@ func InitMySQL(cnf *config.Config) *gorm.DB {
 	}
 	MySQLClient = db
 	return db
+}
+
+func InitMySQLForTest(Username, Password, Host, Database string, Port uint) {
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=true&loc=Local&timeout=10s&readTimeout=10s&writeTimeout=10s", Username, Password, Host, Port, Database)
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
+		SkipDefaultTransaction: true,
+		PrepareStmt:            true, //预编译语句
+		Logger:                 newGormLogger(),
+	})
+	if err != nil {
+		utils.Logger().Error(err)
+		panic(err)
+	}
+	MySQLClient = db
 }
 
 func newGormLogger() logger.Interface {

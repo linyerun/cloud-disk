@@ -8,5 +8,5 @@ MySQL:
   database: cloud-disk
   port: 3306
 Redis:
-  host: localhost
+  host: 192.168.1.135
   port: 6379

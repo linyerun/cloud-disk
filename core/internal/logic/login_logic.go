@@ -35,13 +35,14 @@ func (l *LoginLogic) Login(req *types.LoginRequest) (resp *types.CommonResponse,
 		return
 	}
 	// 判断是否能登录
-	if !db.HasTheUser(req.Email, utils.Md5(req.Password)) {
+	userId, ok := db.HasTheUser(req.Email, utils.Md5(req.Password))
+	if !ok {
 		resp.Code = resp_code_msg.LoginError
 		return
 	}
 	// 生成token
-	token, err := utils.GenerateToken(req.Email, define.TokenExpireTime)
-	refreshToken, err := utils.GenerateToken(req.Email, define.TokenExpireTime*2)
+	token, err := utils.GenerateToken(req.Email, userId, define.TokenExpireTime)
+	refreshToken, err := utils.GenerateToken(req.Email, userId, define.TokenExpireTime*2)
 	if err != nil {
 		resp.Code = resp_code_msg.TokenGenerateError
 		return

@@ -9,6 +9,20 @@ service core-api {
 	post /login/user(LoginRequest) returns (CommonResponse)
 }
 
+@server (
+	middleware: Auth
+)
+
+service core-api {
+	// 根据email获取某用户信息
+	@handler UserMsg
+	get /user/msg(UserMsgRequest) returns (CommonResponse)
+
+	// 上传文件
+	@handler UploadFile
+	post /file/upload(UploadFile) returns (CommonResponse)
+}
+
 type CommonResponse {
 	Code uint        `json:"code"`
 	Msg  string      `json:"msg"`
@@ -37,4 +51,14 @@ type LoginRequest {
 	Email string `json:"email"`
 	// 密码
 	Password string `json:"password"`
+}
+
+type UserMsgRequest {
+	Email string `json:"email"`
+}
+
+type UploadFile {
+	Hash string `json:"hash,optional"`
+	Size uint   `json:"size,optional"`
+	Path string `json:"path,optional"`
 }

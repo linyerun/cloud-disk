@@ -56,8 +56,8 @@ func (l *RegisterLogic) Register(req *types.RegisterRequest) (resp *types.Common
 		return
 	}
 	// 生成token
-	token, err := utils.GenerateToken(req.Email, define.TokenExpireTime)
-	refreshToken, err := utils.GenerateToken(req.Email, define.TokenExpireTime*2)
+	token, err := utils.GenerateToken(req.Email, user.ID, define.TokenExpireTime)
+	refreshToken, err := utils.GenerateToken(req.Email, user.ID, define.TokenExpireTime*2)
 	if err != nil {
 		resp.Code = resp_code_msg.TokenGenerateError
 		return
