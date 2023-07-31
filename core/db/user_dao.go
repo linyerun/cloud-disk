@@ -6,9 +6,11 @@ import (
 	"errors"
 )
 
+var tableNameUser = models.User{}.TableName()
+
 func HasRegistered(email string) bool {
 	var cnt int64
-	err := MySQLClient.Table("user").Where("email = ?", email).Count(&cnt).Error
+	err := MySQLClient.Table(tableNameUser).Where("email = ?", email).Count(&cnt).Error
 	if err != nil {
 		utils.Logger().Error(err)
 		return false
@@ -22,7 +24,7 @@ func SaveUser(user *models.User) error {
 
 func HasTheNickname(nickname string) bool {
 	var cnt int64
-	err := MySQLClient.Table("user").Where("nickname = ?", nickname).Count(&cnt).Error
+	err := MySQLClient.Table(tableNameUser).Where("nickname = ?", nickname).Count(&cnt).Error
 	if err != nil {
 		utils.Logger().Error(err)
 		return false
@@ -32,7 +34,7 @@ func HasTheNickname(nickname string) bool {
 
 func HasTheUser(email string, password string) (uint, bool) {
 	var id uint
-	err := MySQLClient.Table("user").Select("id").Where("email = ? and password = ?", email, password).Scan(&id).Error
+	err := MySQLClient.Table(tableNameUser).Select("id").Where("email = ? and password = ?", email, password).Scan(&id).Error
 	if err != nil {
 		utils.Logger().Error(err)
 		return 0, false
@@ -43,7 +45,7 @@ func HasTheUser(email string, password string) (uint, bool) {
 func GetUserByEmail(email string) (user *models.User, err error) {
 	user = &models.User{}
 	var cnt int64
-	err = MySQLClient.Table("user").Select("email, nickname, head_portrait").Where("email = ?", email).First(user).Count(&cnt).Error
+	err = MySQLClient.Table(tableNameUser).Select("email, nickname, head_portrait").Where("email = ?", email).First(user).Count(&cnt).Error
 	if err != nil {
 		return nil, err
 	}
@@ -55,6 +57,6 @@ func GetUserByEmail(email string) (user *models.User, err error) {
 
 func GetUserCapacityById(uid int) (user *models.User, err error) {
 	user = &models.User{}
-	err = MySQLClient.Table("user").Select("cur_capacity, total_capacity").Where("id = ?", uid).First(user).Error
+	err = MySQLClient.Table(tableNameUser).Select("cur_capacity, total_capacity").Where("id = ?", uid).First(user).Error
 	return
 }

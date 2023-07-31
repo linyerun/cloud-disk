@@ -33,3 +33,48 @@ type UploadFile struct {
 	Size uint   `json:"size,optional"`
 	Path string `json:"path,optional"`
 }
+
+type SaveUserFile struct {
+	ParentId uint   `json:"parent_id"` // 0表示它处于根目录
+	UserId   uint   `json:"user_id,optional"`
+	FileId   uint   `json:"file_id,optional"` // 文件夹的file_id为0
+	FileType uint8  `json:"file_type"`        // 0: 文件夹, 1:文件
+	Filename string `json:"filename"`         // 文件或者文件夹用户的自定义取名
+}
+
+type GetUserFileListRequest struct {
+	UserId   uint `json:"user_id,optional"`
+	ParentId uint `path:"parentId"`
+}
+
+type UpdateUserFileNameRequest struct {
+	UserId     uint   `json:"user_id,optional"`
+	UserFileId uint   `json:"user_file_id"`
+	Filename   string `json:"filename"` // 文件或者文件夹用户的自定义取名
+}
+
+type DeleteUserFileByIdRequest struct {
+	UserId     uint `json:"user_id,optional"`
+	UserFileId uint `path:"user_file_id"`
+}
+
+type UpdateUserFileParentIdRequest struct {
+	UserId     uint `json:"user_id,optional"`
+	ParentId   uint `json:"parent_id"` // 0表示它处于根目录
+	UserFileId uint `json:"user_file_id"`
+}
+
+type SaveShareFileRequest struct {
+	UserId      uint  `json:"user_id,optional"`
+	UserFileId  uint  `json:"user_file_id"`
+	ExpiredTime int64 `gorm:"column:expired_time"`
+}
+
+type CheckShareFileRequest struct {
+	ShareFileId uint `path:"share_file_id"`
+}
+
+type UserIdRequest struct {
+	UserId uint   `json:"user_id,optional"`
+	Email  string `json:"email,optional"`
+}

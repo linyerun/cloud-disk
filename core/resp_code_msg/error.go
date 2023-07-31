@@ -6,7 +6,11 @@ const (
 	LoginError         = 403
 	TokenError         = 405
 	GetDataError       = 406
+	DirError           = 407
+	FileError          = 408
+	ParamLenError      = 409
 
+	SystemError        = 500
 	SendEmailError     = 501
 	SaveDataError      = 502
 	TokenGenerateError = 503

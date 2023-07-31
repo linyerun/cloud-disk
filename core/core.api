@@ -1,12 +1,23 @@
+@server (
+	middleware: SaveOrRejectRemoteAddr
+)
+
 service core-api {
+	// 发送验证码
 	@handler SendCodeForRegister
 	post /email/code/register(SendCodeRequest) returns (CommonResponse)
 
+	// 注册
 	@handler Register
 	post /register/user(RegisterRequest) returns (CommonResponse)
 
+	// 登录
 	@handler Login
 	post /login/user(LoginRequest) returns (CommonResponse)
+
+	// 查看分享文件
+	@handler CheckShareFile
+	get /share/file/check/:share_file_id(CheckShareFileRequest) returns (CommonResponse)
 }
 
 @server (
@@ -14,6 +25,10 @@ service core-api {
 )
 
 service core-api {
+	// 刷新token
+	@handler RefreshToken
+	put /user/refresh/token (UserIdRequest) returns (CommonResponse)
+
 	// 根据email获取某用户信息
 	@handler UserMsg
 	get /user/msg(UserMsgRequest) returns (CommonResponse)
@@ -21,6 +36,30 @@ service core-api {
 	// 上传文件
 	@handler UploadFile
 	post /file/upload(UploadFile) returns (CommonResponse)
+
+	// 新增文件/文件夹(可用于保存分享的文件)
+	@handler SaveUserFile
+	post /user/file/save(SaveUserFile) returns (CommonResponse)
+
+	// 根据parentId获取文件/文件夹列表
+	@handler GetUserFileList
+	get /user/files/get/:parentId (GetUserFileListRequest) returns (CommonResponse)
+
+	// 修改文件/文件夹名称
+	@handler UpdateUserFileName
+	put /user/file/update/name(UpdateUserFileNameRequest) returns (CommonResponse)
+
+	// 删除文件/文件夹
+	@handler DeleteUserFileById
+	delete /user/file/delete/:user_file_id(DeleteUserFileByIdRequest) returns (CommonResponse)
+
+	// 移动文件/文件夹
+	@handler UpdateUserFileParentId
+	put /user/file/update/move(UpdateUserFileParentIdRequest) returns (CommonResponse)
+
+	// 分享自己的文件
+	@handler SaveShareFile
+	post /share/file/save(SaveShareFileRequest) returns (CommonResponse)
 }
 
 type CommonResponse {
@@ -61,4 +100,49 @@ type UploadFile {
 	Hash string `json:"hash,optional"`
 	Size uint   `json:"size,optional"`
 	Path string `json:"path,optional"`
+}
+
+type SaveUserFile {
+	ParentId uint   `json:"parent_id"` // 0表示它处于根目录
+	UserId   uint   `json:"user_id,optional"`
+	FileId   uint   `json:"file_id,optional"` // 文件夹的file_id为0
+	FileType uint8  `json:"file_type"`        // 0: 文件夹, 1:文件
+	Filename string `json:"filename"`         // 文件或者文件夹用户的自定义取名
+}
+
+type GetUserFileListRequest {
+	UserId   uint `json:"user_id,optional"`
+	ParentId uint `path:"parentId"`
+}
+
+type UpdateUserFileNameRequest {
+	UserId     uint   `json:"user_id,optional"`
+	UserFileId uint   `json:"user_file_id"`
+	Filename   string `json:"filename"` // 文件或者文件夹用户的自定义取名
+}
+
+type DeleteUserFileByIdRequest {
+	UserId     uint `json:"user_id,optional"`
+	UserFileId uint `path:"user_file_id"`
+}
+
+type UpdateUserFileParentIdRequest {
+	UserId     uint `json:"user_id,optional"`
+	ParentId   uint `json:"parent_id"` // 0表示它处于根目录
+	UserFileId uint `json:"user_file_id"`
+}
+
+type SaveShareFileRequest {
+	UserId      uint  `json:"user_id,optional"`
+	UserFileId  uint  `json:"user_file_id"`
+	ExpiredTime int64 `gorm:"column:expired_time"`
+}
+
+type CheckShareFileRequest {
+	ShareFileId uint `path:"share_file_id"`
+}
+
+type UserIdRequest {
+	UserId uint   `json:"user_id,optional"`
+	Email  string `json:"email,optional"`
 }

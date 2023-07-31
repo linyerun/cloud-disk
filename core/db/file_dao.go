@@ -5,8 +5,10 @@ import (
 	"errors"
 )
 
+var tableNameFile = models.File{}.TableName()
+
 func GetFileByHash(hash string) (fid uint, err error) {
-	err = MySQLClient.Table("file").Select("id").Where("hash = ?", hash).Scan(&fid).Error
+	err = MySQLClient.Table(tableNameFile).Select("id").Where("hash = ?", hash).Scan(&fid).Error
 	if err == nil && fid == 0 {
 		err = errors.New("不存在该文件")
 	}

@@ -8,29 +8,46 @@ import (
 	"sync"
 )
 
-var myLog *logrus.Logger
-var once sync.Once
+var myLog01, myLog02 *logrus.Logger
+var once01, once02 sync.Once
 
 func Logger() *logrus.Logger {
-	once.Do(
+	once01.Do(
 		func() {
-			myLog = logrus.New()              //创建logrus
-			myLog.SetLevel(logrus.DebugLevel) //设置日志级别
-			myLog.SetFormatter(               //设置时间格式
+			myLog01 = logrus.New()              //创建logrus
+			myLog01.SetLevel(logrus.DebugLevel) //设置日志级别
+			myLog01.SetFormatter(               //设置时间格式
 				&logrus.TextFormatter{TimestampFormat: "2006-01-02 15:04:05"},
 			)
-			output, err := getOutputFile()
+			output, err := getOutputFile("global.log")
 			if err != nil {
 				panic(err)
 			}
-			myLog.SetOutput(output)    // 设置输入文件
-			myLog.AddHook(new(myHook)) //添加钩子
+			myLog01.SetOutput(output)    // 设置输入文件
+			myLog01.AddHook(new(myHook)) //添加钩子
 		},
 	)
-	return myLog
+	return myLog01
 }
 
-func getOutputFile() (*os.File, error) {
+func IpLogger() *logrus.Logger {
+	once02.Do(func() {
+		myLog02 = logrus.New()             //创建logrus
+		myLog02.SetLevel(logrus.InfoLevel) //设置日志级别
+		myLog02.SetFormatter(              //设置时间格式
+			&logrus.TextFormatter{TimestampFormat: "2006-01-02 15:04:05"},
+		)
+		output, err := getOutputFile("ip.log")
+		if err != nil {
+			panic(err)
+		}
+		myLog02.SetOutput(output)    // 设置输入文件
+		myLog02.AddHook(new(myHook)) //添加钩子
+	})
+	return myLog02
+}
+
+func getOutputFile(filename string) (*os.File, error) {
 	//获取绝对路径
 	rootDir, err := os.Getwd()
 	if err != nil {
@@ -49,8 +66,7 @@ func getOutputFile() (*os.File, error) {
 
 	//目录存在，那就直接执行下面的就行了
 	//开始创建文件
-	fileName := "logrus.log"
-	filePath := path.Join(fileDir, fileName)
+	filePath := path.Join(fileDir, filename)
 	_, err = os.Stat(filePath)
 	if os.IsNotExist(err) {
 		//文件不存在就创建文件

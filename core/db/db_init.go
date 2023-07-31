@@ -35,6 +35,20 @@ func InitRedis(cnf *config.Config) *redis.Client {
 	return db
 }
 
+func InitRedisForTest(Host string, Port uint) {
+	db := redis.NewClient(&redis.Options{
+		Addr:     fmt.Sprintf("%s:%d", Host, Port),
+		Password: "", // no password set
+		DB:       0,  // use default DB
+	})
+	if err := db.Ping(context.Background()).Err(); err != nil {
+		utils.Logger().Warn("请开启Redis服务端，默认地址为: localhost:6379")
+		utils.Logger().Error(err)
+		panic(err)
+	}
+	RedisClient = db
+}
+
 func InitMySQL(cnf *config.Config) *gorm.DB {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=true&loc=Local&timeout=10s&readTimeout=10s&writeTimeout=10s", cnf.MySQL.Username, cnf.MySQL.Password, cnf.MySQL.Host, cnf.MySQL.Port, cnf.MySQL.Database)
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{

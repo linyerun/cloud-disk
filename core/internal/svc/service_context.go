@@ -12,18 +12,20 @@ import (
 )
 
 type ServiceContext struct {
-	Config      config.Config
-	MySQLClient *gorm.DB
-	RedisClient *redis.Client
-	Auth        rest.Middleware
+	Config                 config.Config
+	MySQLClient            *gorm.DB
+	RedisClient            *redis.Client
+	Auth                   rest.Middleware
+	SaveOrRejectRemoteAddr rest.Middleware
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
 	ret := &ServiceContext{
-		Config:      c,
-		MySQLClient: db.InitMySQL(&c),
-		RedisClient: db.InitRedis(&c),
-		Auth:        middleware.NewAuthMiddleware().Handle,
+		Config:                 c,
+		MySQLClient:            db.InitMySQL(&c),
+		RedisClient:            db.InitRedis(&c),
+		Auth:                   middleware.NewAuthMiddleware().Handle,
+		SaveOrRejectRemoteAddr: middleware.NewSaveOrRejectRemoteAddrMiddleware().Handle,
 	}
 	ret.generateTable() // 如果没有创建表使用这个函数来生成
 	return ret
