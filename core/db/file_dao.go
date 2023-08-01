@@ -18,3 +18,9 @@ func GetFileByHash(hash string) (fid uint, err error) {
 func SaveFile(file *models.File) error {
 	return MySQLClient.Create(file).Error
 }
+
+func GetFileById(id uint) (file *models.File, err error) {
+	file = new(models.File)
+	err = MySQLClient.Table(tableNameFile).Where("id = ?", id).Find(&file).Error
+	return
+}

@@ -60,6 +60,10 @@ service core-api {
 	// 分享自己的文件
 	@handler SaveShareFile
 	post /share/file/save(SaveShareFileRequest) returns (CommonResponse)
+
+	// 下载文件
+	@handler DownloadFileById
+	get /file/download/:file_id(DownloadFileByIdRequest) returns (CommonResponse)
 }
 
 type CommonResponse {
@@ -135,7 +139,7 @@ type UpdateUserFileParentIdRequest {
 type SaveShareFileRequest {
 	UserId      uint  `json:"user_id,optional"`
 	UserFileId  uint  `json:"user_file_id"`
-	ExpiredTime int64 `gorm:"column:expired_time"`
+	ExpiredTime int64 `gorm:"column:expired_time"` // 秒数
 }
 
 type CheckShareFileRequest {
@@ -145,4 +149,8 @@ type CheckShareFileRequest {
 type UserIdRequest {
 	UserId uint   `json:"user_id,optional"`
 	Email  string `json:"email,optional"`
+}
+
+type DownloadFileByIdRequest {
+	FileId uint `path:"file_id"`
 }

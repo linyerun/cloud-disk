@@ -5,6 +5,7 @@ import (
 	"cloud-disk/core/internal/config"
 	"cloud-disk/core/internal/middleware"
 	"cloud-disk/core/models"
+	"cloud-disk/core/process"
 	"cloud-disk/core/utils"
 	"github.com/redis/go-redis/v9"
 	"github.com/zeromicro/go-zero/rest"
@@ -28,6 +29,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		SaveOrRejectRemoteAddr: middleware.NewSaveOrRejectRemoteAddrMiddleware().Handle,
 	}
 	ret.generateTable() // 如果没有创建表使用这个函数来生成
+	process.Init()      // 初始化协程池
 	return ret
 }
 

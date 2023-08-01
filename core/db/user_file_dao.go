@@ -41,3 +41,8 @@ func UpdateUserFileParentId(userId, userFileId, parentId uint) error {
 func DeleteUserFileById(userFileId, userId uint) error {
 	return MySQLClient.Where("user_id = ? and id = ?", userId, userFileId).Delete(&models.UserFile{}).Error
 }
+
+func GetUserFileFileIdByIds(userId, userFileId uint) (fileId uint, err error) {
+	err = MySQLClient.Table(tableNameUserFile).Select("file_id").Where("user_id = ?, id = ?", userId, userFileId).Scan(&fileId).Error
+	return
+}

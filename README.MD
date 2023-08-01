@@ -6,3 +6,7 @@
 
 ## Token
 - 我们直接把token放在header头部时，`go-zero`阻止，我们就放在`Authorization`上就行了
+
+
+## TODO
+- id自增不好，容易被用户察觉搞事情
