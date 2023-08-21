@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 if [ -f cloud-disk ]; then
   rm -f cloud-disk
 fi
