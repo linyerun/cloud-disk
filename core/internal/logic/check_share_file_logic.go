@@ -81,7 +81,6 @@ func (l *CheckShareFileLogic) CheckShareFile(req *types.CheckShareFileRequest) (
 	process.AddTask(func() {
 		val := fmt.Sprintf("%d:%d:%d", fileId, userId, expiredAt)
 		l.svcCtx.RedisClient.Set(l.ctx, key, val, define.CacheExpireTime*time.Second)
-		// TODO 修Bug
 		clickNum, err := l.svcCtx.RedisClient.Get(l.ctx, key).Result()
 		if errors.Is(err, redis.Nil) || shareFile.ClickNum > utils.ToUint(clickNum) {
 			l.svcCtx.RedisClient.Set(l.ctx, key+"_ClickNum", fmt.Sprintf("%d", shareFile.ClickNum+1), 0)
