@@ -3,3 +3,4 @@ cloud_disk_logs
 *.log
 tmp
 logs
+cloud-disk
