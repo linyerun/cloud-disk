@@ -2,6 +2,7 @@ package logic
 
 import (
 	"cloud-disk/core/db"
+	"cloud-disk/core/dto"
 	"cloud-disk/core/resp_code_msg"
 	"cloud-disk/core/utils"
 	"context"
@@ -40,7 +41,17 @@ func (l *GetUserFileListLogic) GetUserFileList(req *types.GetUserFileListRequest
 		utils.Logger().Error(err)
 		return
 	}
+	userFilesDto := make([]*dto.UserFile, len(userFiles))
+	for i := range userFiles {
+		userFilesDto[i] = &dto.UserFile{
+			ID:       userFiles[i].ID,
+			FileId:   userFiles[i].FileId,
+			Filename: userFiles[i].Filename,
+			FileType: userFiles[i].FileType,
+			ParentId: req.ParentId,
+		}
+	}
 	resp.Code = resp_code_msg.Success
-	resp.Data = utils.H{"user_files": userFiles}
+	resp.Data = utils.H{"user_files": userFilesDto}
 	return
 }

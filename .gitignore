@@ -1,3 +1,5 @@
 .idea
 cloud_disk_logs
 *.log
+tmp
+logs

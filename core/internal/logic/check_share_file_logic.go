@@ -6,6 +6,7 @@ import (
 	"cloud-disk/core/process"
 	"cloud-disk/core/utils"
 	"context"
+	"errors"
 	"fmt"
 	"github.com/redis/go-redis/v9"
 	"strings"
@@ -32,11 +33,11 @@ func NewCheckShareFileLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Ch
 }
 
 func (l *CheckShareFileLogic) CheckShareFile(req *types.CheckShareFileRequest) (resp *types.CommonResponse, e error) {
+	resp = new(types.CommonResponse)
 	// key: ShareFileId
 	// Value: FieldId, UserId, ExpiredTime, ClickNum
 	fileId, userId, expiredAt, clickNum := uint(0), uint(0), int64(0), uint(0)
 	key := define.ShareFilePrefix + fmt.Sprintf("%d", req.ShareFileId)
-	resp = new(types.CommonResponse)
 
 	// 从缓存中拿数据
 	if res, err := l.svcCtx.RedisClient.Get(l.ctx, key).Result(); err != redis.Nil {
@@ -49,12 +50,12 @@ func (l *CheckShareFileLogic) CheckShareFile(req *types.CheckShareFileRequest) (
 			return
 		}
 
-		clickNum = utils.ToUint(l.svcCtx.RedisClient.Get(l.ctx, key+"_ClickNum").Val())
+		clickNum = utils.ToUint(l.svcCtx.RedisClient.Get(l.ctx, key+"_ClickNum").Val()) + 1
 		process.AddTask(func() {
 			// 更新刷新数
 			l.svcCtx.RedisClient.Set(l.ctx, key+"_ClickNum", fmt.Sprintf("%d", clickNum), 0)
 			// 把点击次数保存到数据库
-			if clickNum++; clickNum%define.UpdateClickNum == 0 {
+			if clickNum%define.UpdateClickNum == 0 {
 				err := db.UpdateShareFieldClickNumById(req.ShareFileId, clickNum)
 				if err != nil {
 					utils.Logger().Error(err)
@@ -80,7 +81,11 @@ func (l *CheckShareFileLogic) CheckShareFile(req *types.CheckShareFileRequest) (
 	process.AddTask(func() {
 		val := fmt.Sprintf("%d:%d:%d", fileId, userId, expiredAt)
 		l.svcCtx.RedisClient.Set(l.ctx, key, val, define.CacheExpireTime*time.Second)
-		l.svcCtx.RedisClient.Set(l.ctx, key+"_ClickNum", fmt.Sprintf("%d", shareFile.ClickNum+1), 0)
+		// TODO 修Bug
+		clickNum, err := l.svcCtx.RedisClient.Get(l.ctx, key).Result()
+		if errors.Is(err, redis.Nil) || shareFile.ClickNum > utils.ToUint(clickNum) {
+			l.svcCtx.RedisClient.Set(l.ctx, key+"_ClickNum", fmt.Sprintf("%d", shareFile.ClickNum+1), 0)
+		}
 	})
 
 	// 返回结果

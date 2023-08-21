@@ -7,7 +7,7 @@ import (
 )
 
 func init() {
-	db.InitRedisForTest("localhost", 6379)
+	db.InitRedisForTest("192.168.200.131", 6379)
 }
 
 func TestRedis(t *testing.T) {

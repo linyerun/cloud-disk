@@ -11,7 +11,7 @@ func HasTheDir(parentId, userId uint) bool {
 		return false
 	}
 	var cnt int64
-	err := MySQLClient.Table(tableNameUserFile).Where("user_id = ? and parent_id = ? and file_type = 0", userId, parentId).Count(&cnt).Error
+	err := MySQLClient.Table(tableNameUserFile).Where("user_id = ? and id = ? and file_type = 0", userId, parentId).Count(&cnt).Error
 	if err != nil {
 		return false
 	}
@@ -23,10 +23,7 @@ func SaveUserFile(userFile *models.UserFile) error {
 }
 
 func GetUserFileListByParentIdUserId(parentId, userId uint) (userFiles []*models.UserFile, err error) {
-	err = MySQLClient.Table(tableNameUserFile).Select("file_id, filename, file_type").Where("parent_id = ? and user_id = ?", parentId, userId).Find(&userFiles).Error
-	for _, file := range userFiles {
-		file.ParentId = parentId
-	}
+	err = MySQLClient.Table(tableNameUserFile).Select("id, file_id, filename, file_type").Where("parent_id = ? and user_id = ?", parentId, userId).Find(&userFiles).Error
 	return
 }
 
@@ -43,6 +40,6 @@ func DeleteUserFileById(userFileId, userId uint) error {
 }
 
 func GetUserFileFileIdByIds(userId, userFileId uint) (fileId uint, err error) {
-	err = MySQLClient.Table(tableNameUserFile).Select("file_id").Where("user_id = ?, id = ?", userId, userFileId).Scan(&fileId).Error
+	err = MySQLClient.Table(tableNameUserFile).Select("file_id").Where("user_id = ? and id = ?", userId, userFileId).Scan(&fileId).Error
 	return
 }

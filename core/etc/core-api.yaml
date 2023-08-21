@@ -1,6 +1,8 @@
 Name: core-api
 Host: 0.0.0.0
 Port: 8888
+# 请求最大字节数
+MaxBytes: 524289024
 MySQL:
   username: root
   password: "123456"
@@ -8,5 +10,12 @@ MySQL:
   database: cloud-disk
   port: 3306
 Redis:
-  host: 192.168.1.135
+  host: 192.168.200.131
   port: 6379
+Log:
+  ServiceName: core-api
+  Mode: file
+  Path: cloud_disk_logs
+  Level: info
+  Encoding: json
+  KeepDays: 7

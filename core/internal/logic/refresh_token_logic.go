@@ -27,6 +27,12 @@ func NewRefreshTokenLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Refr
 }
 
 func (l *RefreshTokenLogic) RefreshToken(req *types.UserIdRequest) (resp *types.CommonResponse, err error) {
+	resp = new(types.CommonResponse)
+	defer func() {
+		if resp.Msg == "" {
+			resp.Msg = resp_code_msg.GetMsgByCode(resp.Code)
+		}
+	}()
 	// 生成token
 	token, err := utils.GenerateToken(req.Email, req.UserId, define.TokenExpireTime)
 	refreshToken, err := utils.GenerateToken(req.Email, req.UserId, define.TokenExpireTime*2)

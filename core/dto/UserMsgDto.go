@@ -1,7 +1,7 @@
 package dto
 
 type User struct {
-	Email        string
-	Nickname     string
-	HeadPortrait string
+	Email        string `json:"email"`
+	Nickname     string `json:"nickname"`
+	HeadPortrait string `json:"head_portrait,omitempty"`
 }

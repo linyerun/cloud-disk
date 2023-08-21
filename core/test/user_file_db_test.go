@@ -35,3 +35,8 @@ func TestDeleteUserFileById(t *testing.T) {
 	}
 	fmt.Println("OK")
 }
+
+func TestHasTheDir(t *testing.T) {
+	hasTheDir := db.HasTheDir(3, 1)
+	fmt.Println("是否存在该目录:", hasTheDir)
+}

@@ -67,7 +67,7 @@ type UpdateUserFileParentIdRequest struct {
 type SaveShareFileRequest struct {
 	UserId      uint  `json:"user_id,optional"`
 	UserFileId  uint  `json:"user_file_id"`
-	ExpiredTime int64 `gorm:"column:expired_time"` // 秒数
+	ExpiredTime int64 `json:"expired_time"` // 秒数
 }
 
 type CheckShareFileRequest struct {
